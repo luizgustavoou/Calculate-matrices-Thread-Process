@@ -130,7 +130,7 @@ int main()
 
     matrixA = createMyArray(rowA, colA);
     matrixB = createMyArray(rowB, colB);
-    matrixC = createMyArray(rowB, colA);
+    matrixC = createMyArray(rowA, colB);
     threads = (pthread_t *)malloc(sizeof(pthread_t) * (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX);
 
     if (colA == rowB)

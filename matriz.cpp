@@ -71,7 +71,7 @@ int main()
 
     matrixA = createMatrix(rowA, colA);
     matrixB = createMatrix(rowB, colB);
-    matrixC = createMatrix(rowB, colA);
+    matrixC = createMatrix(rowA, colB);
 
     if (colA == rowB)
     {
