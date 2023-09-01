@@ -3,7 +3,7 @@
 #include <chrono>
 
 using namespace std;
-const int PARTITION_MATRIX = 4;
+const int PARTITION_MATRIX = 100;
 
 typedef struct
 {
