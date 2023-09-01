@@ -3,7 +3,7 @@
 #include <chrono>
 
 using namespace std;
-const int PARTITION_MATRIX = 100;
+const int PARTITION_MATRIX = 50;
 
 typedef struct
 {
@@ -83,7 +83,6 @@ MyArray *matrixC;
 void *calculeElementInMatrix(void *tid)
 {
     int xx, aux = 0;
-
     MatrixPartition *matrixPartition = (MatrixPartition *)tid;
     // printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
@@ -100,13 +99,14 @@ void *calculeElementInMatrix(void *tid)
         aux = 0;
     }
 
-    pthread_exit(nullptr);
+    pthread_exit(NULL);
 }
 
 int main()
 {
 
     // Definição de variaveis
+    void *threads_arg;
     int ii, jj, xx, rowA, colA, rowB, colB;
 
     pthread_t *threads;
@@ -125,7 +125,9 @@ int main()
     matrixA = createMyArray(rowA, colA);
     matrixB = createMyArray(rowB, colB);
     matrixC = createMyArray(rowA, colB);
-    threads = (pthread_t *)malloc(sizeof(pthread_t) * (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX);
+    int lenThreads = (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX;
+    lenThreads = lenThreads <= 0 ? 1 : lenThreads; // criar no minimo 1 thread.
+    threads = (pthread_t *)malloc(sizeof(pthread_t) * lenThreads);
 
     if (colA == rowB)
     {
@@ -186,6 +188,12 @@ int main()
         }
 
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+        for (int ii = 0; ii < lenThreads; ii++)
+        {
+            // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
+            pthread_join(threads[ii], &threads_arg);
+        }
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
