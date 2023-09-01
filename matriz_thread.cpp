@@ -3,18 +3,25 @@
 #include <chrono>
 
 using namespace std;
+const int PARTITION = 4;
 
 typedef struct
 {
-    int posRow;
-    int posCol;
-} CurrentRowCol;
+    int posStart;
+    int posEnd;
+} MatrixPartition;
 
 typedef struct
 {
     int nrow, ncol;
     int **mat;
 } Matrix;
+
+typedef struct
+{
+    int nrow, ncol;
+    int *mat;
+} MyArray;
 
 typedef struct
 {
@@ -37,6 +44,17 @@ Matrix *createMatrix(int nrow, int ncol)
     return matrix;
 }
 
+MyArray *createMyArray(int nrow, int ncol)
+{
+    MyArray *myArray = (MyArray *)malloc(sizeof(MyArray));
+    myArray->nrow = nrow;
+    myArray->ncol = ncol;
+
+    myArray->mat = (int *)calloc(nrow * ncol, sizeof(int));
+
+    return myArray;
+}
+
 void readMatrix(Matrix *matrix)
 {
     for (int ii = 0; ii < matrix->nrow; ii++)
@@ -57,27 +75,27 @@ void destroyMatrix(Matrix **m)
 // inicio variaveis globais
 
 int aux = 0;
-Matrix *matrixA;
-Matrix *matrixB;
-Matrix *matrixC;
+MyArray *matrixA;
+MyArray *matrixB;
+MyArray *matrixC;
 
 // fim variaveis globias
 
 void *calculeElementInMatrix(void *tid)
 {
     int xx;
-    CurrentRowCol *rowCol = (CurrentRowCol *)tid;
-    // printf("THREAD: %d %d\n", rowCol->posRow, rowCol->posCol);
+    MatrixPartition *matrixPartition = (MatrixPartition *)tid;
+    printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
-    matrixC->mat[rowCol->posRow][rowCol->posCol] = 0;
-    for (xx = 0; xx < matrixB->nrow; xx++)
-    {
-        aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
-    }
+    // matrixC->mat[rowCol->posRow][rowCol->posCol] = 0;
+    // for (xx = 0; xx < matrixB->nrow; xx++)
+    // {
+    //     aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
+    // }
 
-    matrixC->mat[rowCol->posRow][rowCol->posCol] = aux;
+    // matrixC->mat[rowCol->posRow][rowCol->posCol] = aux;
 
-    aux = 0;
+    // aux = 0;
     pthread_exit(nullptr);
 }
 
@@ -100,10 +118,10 @@ int main()
     cout << "Informe a quantidade de colunas da matriz B : ";
     scanf("%d", &colB);
 
-    threads = (pthread_t *)malloc(sizeof(pthread_t) * (rowA * colB));
-    matrixA = createMatrix(rowA, colA);
-    matrixB = createMatrix(rowB, colB);
-    matrixC = createMatrix(rowA, colB);
+    matrixA = createMyArray(rowA, colA);
+    matrixB = createMyArray(rowB, colB);
+    matrixC = createMyArray(rowA, colB);
+    threads = (pthread_t *)malloc(sizeof(pthread_t) * (matrixC->nrow * matrixC->ncol) / PARTITION);
 
     if (colA == rowB)
     {
@@ -112,7 +130,7 @@ int main()
         {
             for (jj = 0; jj < colA; jj++)
             {
-                matrixA->mat[ii][jj] = rand() % 10 + 1;
+                matrixA->mat[ii * rowA + jj] = rand() % 10 + 1;
             }
         }
 
@@ -120,7 +138,7 @@ int main()
         {
             for (jj = 0; jj < colB; jj++)
             {
-                matrixB->mat[ii][jj] = rand() % 10 + 1;
+                matrixB->mat[ii * rowB + jj] = rand() % 10 + 1;
             }
         }
 
@@ -131,7 +149,7 @@ int main()
         {
             for (jj = 0; jj < colA; jj++)
             {
-                cout << matrixA->mat[ii][jj] << " ";
+                cout << matrixA->mat[ii * rowA + jj] << " ";
             }
             cout << endl;
         }
@@ -141,34 +159,28 @@ int main()
         {
             for (jj = 0; jj < colB; jj++)
             {
-                cout << matrixB->mat[ii][jj] << " ";
+                cout << matrixB->mat[ii * rowB + jj] << " ";
             }
             cout << endl;
         }
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        for (ii = 0; ii < rowA; ii++)
+        int index_thread = 0;
+        const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
+
+        for (int pp = 0; pp < rowA * colB; pp = pp + PARTITION)
         {
-            for (jj = 0; jj < colB; jj++)
-            {
-                CurrentRowCol *currentRowCol = (CurrentRowCol *)malloc(sizeof(CurrentRowCol));
+            MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
+            matrixPartition->posStart = pp;
+            int posEnd = (pp + PARTITION - 1);
 
-                currentRowCol->posRow = ii;
-                currentRowCol->posCol = jj;
+            matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
 
-                pthread_create(&threads[ii * rowA + jj], NULL, calculeElementInMatrix, currentRowCol);
-                // matrixC->mat[ii][jj] = 0;
-                // for (xx = 0; xx < rowB; xx++)
-                // {
-                //     aux += matrixA->mat[ii][xx] * matrixB->mat[xx][jj];
-                // }
-
-                // matrixC->mat[ii][jj] = aux;
-
-                // aux = 0;
-            }
+            pthread_create(&threads[index_thread], NULL, calculeElementInMatrix, matrixPartition);
+            index_thread++;
         }
+
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
@@ -177,7 +189,7 @@ int main()
         {
             for (jj = 0; jj < colB; jj++)
             {
-                cout << matrixC->mat[ii][jj] << " ";
+                cout << matrixC->mat[ii * rowA + jj] << " ";
             }
             cout << endl;
         }
