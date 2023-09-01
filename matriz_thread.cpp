@@ -65,19 +65,19 @@ Matrix *matrixC;
 
 void *calculeElementInMatrix(void *tid)
 {
-    CurrentRowCol* rowCol = (CurrentRowCol*) tid;
+    int xx;
+    CurrentRowCol *rowCol = (CurrentRowCol *)tid;
+    // printf("THREAD: %d %d\n", rowCol->posRow, rowCol->posCol);
 
-    printf("Sou uma thread! %d -- %d\n", rowCol->posRow, rowCol->posCol);
+    matrixC->mat[rowCol->posRow][rowCol->posCol] = 0;
+    for (xx = 0; xx < matrixB->nrow; xx++)
+    {
+        aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
+    }
 
-    // matrixC->mat[ii][jj] = 0;
-    // for (xx = 0; xx < rowB; xx++)
-    // {
-    //     aux += matrixA->mat[ii][xx] * matrixB->mat[xx][jj];
-    // }
+    matrixC->mat[rowCol->posRow][rowCol->posCol] = aux;
 
-    // matrixC->mat[ii][jj] = aux;
-
-    // aux = 0;
+    aux = 0;
     pthread_exit(nullptr);
 }
 
@@ -86,7 +86,6 @@ int main()
 
     // Definição de variaveis
     int ii, jj, xx, rowA, colA, rowB, colB;
-    CurrentRowCol *currentRowCol = (CurrentRowCol *)malloc(sizeof(CurrentRowCol));
 
     pthread_t *threads;
 
@@ -147,14 +146,14 @@ int main()
             cout << endl;
         }
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         for (ii = 0; ii < rowA; ii++)
         {
             for (jj = 0; jj < colB; jj++)
             {
+                CurrentRowCol *currentRowCol = (CurrentRowCol *)malloc(sizeof(CurrentRowCol));
+
                 currentRowCol->posRow = ii;
                 currentRowCol->posCol = jj;
 
@@ -171,6 +170,8 @@ int main()
             }
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
         for (ii = 0; ii < rowA; ii++)
         {

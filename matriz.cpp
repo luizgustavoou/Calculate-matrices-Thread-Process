@@ -114,8 +114,6 @@ int main()
             cout << endl;
         }
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         for (ii = 0; ii < rowA; ii++)
@@ -136,6 +134,8 @@ int main()
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
+        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+
         for (ii = 0; ii < rowA; ii++)
         {
             for (jj = 0; jj < colB; jj++)
@@ -144,6 +144,7 @@ int main()
             }
             cout << endl;
         }
+
         cout << endl
              << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
