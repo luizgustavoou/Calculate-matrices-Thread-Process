@@ -3,7 +3,7 @@
 #include <chrono>
 
 using namespace std;
-const int PARTITION = 4;
+const int PARTITION_MATRIX = 4;
 
 typedef struct
 {
@@ -74,7 +74,6 @@ void destroyMatrix(Matrix **m)
 
 // inicio variaveis globais
 
-int aux = 0;
 MyArray *matrixA;
 MyArray *matrixB;
 MyArray *matrixC;
@@ -83,10 +82,21 @@ MyArray *matrixC;
 
 void *calculeElementInMatrix(void *tid)
 {
-    int xx;
+    int xx, aux = 0;
+
     MatrixPartition *matrixPartition = (MatrixPartition *)tid;
     printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
+    for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
+    {
+        matrixC->mat[ii] = 0;
+        for (xx = 0; xx < matrixB->nrow; xx++)
+        {
+            // row nesse caso ii
+            // col nesse caso jj
+            // aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
+        }
+    }
     // matrixC->mat[rowCol->posRow][rowCol->posCol] = 0;
     // for (xx = 0; xx < matrixB->nrow; xx++)
     // {
@@ -120,8 +130,8 @@ int main()
 
     matrixA = createMyArray(rowA, colA);
     matrixB = createMyArray(rowB, colB);
-    matrixC = createMyArray(rowA, colB);
-    threads = (pthread_t *)malloc(sizeof(pthread_t) * (matrixC->nrow * matrixC->ncol) / PARTITION);
+    matrixC = createMyArray(rowB, colA);
+    threads = (pthread_t *)malloc(sizeof(pthread_t) * (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX);
 
     if (colA == rowB)
     {
@@ -169,11 +179,11 @@ int main()
         int index_thread = 0;
         const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
 
-        for (int pp = 0; pp < rowA * colB; pp = pp + PARTITION)
+        for (int pp = 0; pp < matrixC->nrow * matrixC->ncol; pp = pp + PARTITION_MATRIX)
         {
             MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
             matrixPartition->posStart = pp;
-            int posEnd = (pp + PARTITION - 1);
+            int posEnd = (pp + PARTITION_MATRIX - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
 
@@ -185,9 +195,9 @@ int main()
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
-        for (ii = 0; ii < rowA; ii++)
+        for (ii = 0; ii < matrixC->nrow; ii++)
         {
-            for (jj = 0; jj < colB; jj++)
+            for (jj = 0; jj < matrixC->ncol; jj++)
             {
                 cout << matrixC->mat[ii * rowA + jj] << " ";
             }

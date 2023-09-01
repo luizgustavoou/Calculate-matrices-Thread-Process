@@ -71,7 +71,7 @@ int main()
 
     matrixA = createMatrix(rowA, colA);
     matrixB = createMatrix(rowB, colB);
-    matrixC = createMatrix(rowA, colB);
+    matrixC = createMatrix(rowB, colA);
 
     if (colA == rowB)
     {
@@ -116,9 +116,9 @@ int main()
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        for (ii = 0; ii < rowA; ii++)
+        for (ii = 0; ii < matrixC->nrow; ii++)
         {
-            for (jj = 0; jj < colB; jj++)
+            for (jj = 0; jj < matrixC->ncol; jj++)
             {
 
                 matrixC->mat[ii][jj] = 0;
@@ -136,9 +136,9 @@ int main()
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
-        for (ii = 0; ii < rowA; ii++)
+        for (ii = 0; ii < matrixC->nrow; ii++)
         {
-            for (jj = 0; jj < colB; jj++)
+            for (jj = 0; jj < matrixC->ncol; jj++)
             {
                 cout << matrixC->mat[ii][jj] << " ";
             }
