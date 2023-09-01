@@ -85,27 +85,21 @@ void *calculeElementInMatrix(void *tid)
     int xx, aux = 0;
 
     MatrixPartition *matrixPartition = (MatrixPartition *)tid;
-    printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
+    // printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
         matrixC->mat[ii] = 0;
+        int colB = ii % matrixC->ncol;
+        int rowA = (ii - colB) / matrixC->nrow;
         for (xx = 0; xx < matrixB->nrow; xx++)
         {
-            // row nesse caso ii
-            // col nesse caso jj
-            // aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
+            aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
+        matrixC->mat[ii] = aux;
+        aux = 0;
     }
-    // matrixC->mat[rowCol->posRow][rowCol->posCol] = 0;
-    // for (xx = 0; xx < matrixB->nrow; xx++)
-    // {
-    //     aux += matrixA->mat[rowCol->posRow][xx] * matrixB->mat[xx][rowCol->posCol];
-    // }
 
-    // matrixC->mat[rowCol->posRow][rowCol->posCol] = aux;
-
-    // aux = 0;
     pthread_exit(nullptr);
 }
 
