@@ -9,7 +9,7 @@
 #include <iostream>
 
 using namespace std;
-const int PARTITION_MATRIX = 3;
+const int PARTITION_MATRIX = 200;
 
 typedef struct
 {
