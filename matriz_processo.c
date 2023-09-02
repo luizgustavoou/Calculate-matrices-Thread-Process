@@ -159,7 +159,7 @@ int main()
         printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Tempo de execução: %f segundos\n", time_spent);
+        printf("Tempo de execução: %f m/s\n", time_spent/1000);
     }
     else
     {
