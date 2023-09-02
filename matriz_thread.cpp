@@ -3,7 +3,6 @@
 #include <chrono>
 
 using namespace std;
-const int PARTITION_MATRIX = 200;
 
 typedef struct
 {
@@ -76,10 +75,13 @@ int main()
     // Definição de variaveis
     void *threads_arg;
     int ii, jj, xx, rowA, colA, rowB, colB;
+    int PARTITION_MATRIX;
 
     pthread_t *threads;
 
     // Entrada de dados
+    cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
+    scanf("%d", &PARTITION_MATRIX);
     cout << "Informe a quntidade de linhas da matriz A : ";
     scanf("%d", &rowA);
     cout << "Informe a quantidade de colunas da matriz A : ";
