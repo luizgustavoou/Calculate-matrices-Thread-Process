@@ -41,10 +41,22 @@ MyArray *matrixB;
 
 // fim variaveis globias
 
+void printArray(int *array, int nrow, int ncol)
+{
+    for (int ii = 0; ii < nrow; ii++)
+    {
+        for (int jj = 0; jj < ncol; jj++)
+        {
+            cout << array[ii * nrow + jj] << " ";
+        }
+        cout << endl;
+    }
+}
+
 void calculeElementInMatrix(MatrixPartition *matrixPartition, int *sharedMemory, int nrow, int ncol)
 {
     int xx, aux = 0;
-    printf("PROCESSO [%d]: %d %d\n", getpid(), matrixPartition->posStart, matrixPartition->posEnd);
+    // printf("PROCESSO [%d]: %d %d\n", getpid(), matrixPartition->posStart, matrixPartition->posEnd);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
@@ -107,25 +119,10 @@ int main()
 
         // Imprime as matrizes definidas
         cout << "================ MATRIZ A ================" << endl;
-
-        for (ii = 0; ii < rowA; ii++)
-        {
-            for (jj = 0; jj < colA; jj++)
-            {
-                cout << matrixA->mat[ii * rowA + jj] << " ";
-            }
-            cout << endl;
-        }
+        printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
 
         cout << "================ MATRIZ B ================" << endl;
-        for (ii = 0; ii < rowB; ii++)
-        {
-            for (jj = 0; jj < colB; jj++)
-            {
-                cout << matrixB->mat[ii * rowB + jj] << " ";
-            }
-            cout << endl;
-        }
+        printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -157,17 +154,9 @@ int main()
         }
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
-        for (ii = 0; ii < matrixA->nrow; ii++)
-        {
-            for (jj = 0; jj < matrixB->ncol; jj++)
-            {
-                cout << sharedMem[ii * matrixB->ncol + jj] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl
-             << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
     else
     {

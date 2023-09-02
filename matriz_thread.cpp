@@ -36,6 +36,18 @@ MyArray *matrixC;
 
 // fim variaveis globias
 
+void printArray(int *array, int nrow, int ncol)
+{
+    for (int ii = 0; ii < nrow; ii++)
+    {
+        for (int jj = 0; jj < ncol; jj++)
+        {
+            cout << array[ii * nrow + jj] << " ";
+        }
+        cout << endl;
+    }
+}
+
 void *calculeElementInMatrix(void *tid)
 {
     int xx, aux = 0;
@@ -105,28 +117,13 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        // cout << "================ MATRIZ A ================" << endl;
+        cout << "================ MATRIZ A ================" << endl;
+        printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
 
-        // for (ii = 0; ii < rowA; ii++)
-        // {
-        //     for (jj = 0; jj < colA; jj++)
-        //     {
-        //         cout << matrixA->mat[ii * rowA + jj] << " ";
-        //     }
-        //     cout << endl;
-        // }
+        cout << "================ MATRIZ B ================" << endl;
+        printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
 
-        // cout << "================ MATRIZ B ================" << endl;
-        // for (ii = 0; ii < rowB; ii++)
-        // {
-        //     for (jj = 0; jj < colB; jj++)
-        //     {
-        //         cout << matrixB->mat[ii * rowB + jj] << " ";
-        //     }
-        //     cout << endl;
-        // }
-
-        // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
+        // CÁLCULO PRODUTO DAS MATRIZES C = A * B
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         int index_thread = 0;
         const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
@@ -153,16 +150,9 @@ int main()
 
         cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
-        for (ii = 0; ii < matrixC->nrow; ii++)
-        {
-            for (jj = 0; jj < matrixC->ncol; jj++)
-            {
-                cout << matrixC->mat[ii * rowA + jj] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl
-             << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
+        cout
+            << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
     else
     {
