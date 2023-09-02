@@ -9,121 +9,163 @@
 #include <iostream>
 
 using namespace std;
+const int PARTITION_MATRIX = 3;
+
+typedef struct
+{
+    int posStart;
+    int posEnd;
+} MatrixPartition;
+
+typedef struct
+{
+    int nrow, ncol;
+    int *mat;
+} MyArray;
+
+MyArray *createMyArray(int nrow, int ncol)
+{
+    MyArray *myArray = (MyArray *)malloc(sizeof(MyArray));
+    myArray->nrow = nrow;
+    myArray->ncol = ncol;
+
+    myArray->mat = (int *)calloc(nrow * ncol, sizeof(int));
+
+    return myArray;
+}
+
+// inicio variaveis globais
+
+MyArray *matrixA;
+MyArray *matrixB;
+
+// fim variaveis globias
+
+void calculeElementInMatrix(MatrixPartition *matrixPartition, int *sharedMemory, int nrow, int ncol)
+{
+    int xx, aux = 0;
+    printf("PROCESSO [%d]: %d %d\n", getpid(), matrixPartition->posStart, matrixPartition->posEnd);
+
+    for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
+    {
+        sharedMemory[ii] = 0;
+        int colB = ii % ncol;
+        int rowA = (ii - colB) / nrow;
+        for (xx = 0; xx < matrixB->nrow; xx++)
+        {
+            aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
+        }
+        sharedMemory[ii] = aux;
+        aux = 0;
+    }
+}
+
 int main()
 {
 
     // Definição de variaveis
-    int ii, jj, linhaA, colunaA, linhaB, colunaB, x;
+    int ii, jj, xx, rowA, colA, rowB, colB;
 
     // Entrada de dados
     cout << "Informe a quntidade de linhas da matriz A : ";
-    cin >> linhaA;
+    scanf("%d", &rowA);
     cout << "Informe a quantidade de colunas da matriz A : ";
-    cin >> colunaA;
+    scanf("%d", &colA);
+
     cout << "Informe a quntidade de linhas da matriz B : ";
-    cin >> linhaB;
+    scanf("%d", &rowB);
     cout << "Informe a quantidade de colunas da matriz B : ";
-    cin >> colunaB;
+    scanf("%d", &colB);
 
-    int matrizA[linhaA][colunaA];
-    int matrizB[linhaB][colunaB];
-    int matrizC[linhaA][colunaB];
+    matrixA = createMyArray(rowA, colA);
+    matrixB = createMyArray(rowB, colB);
 
-    // vector<vector<int>> *mem;
-    // int valor = shmget(IPC_PRIVATE, 20 * sizeof(vector<vector<int>>), IPC_CREAT | 0666);
-    // mem = static_cast<vector<vector<int>> *>(shmat(valor, NULL, 0));
-    int shmid = shmget(IPC_PRIVATE, sizeof(int) * linhaA * colunaB, IPC_CREAT | 0666);
+    int shmid = shmget(IPC_PRIVATE, sizeof(int) * matrixA->nrow * matrixB->ncol, IPC_CREAT | 0666);
     int *sharedMem = (int *)shmat(shmid, NULL, 0);
-    int aux = 0;
 
-    if (colunaA == linhaB)
+    int lenProcesses = (matrixA->nrow * matrixB->ncol) / PARTITION_MATRIX;
+    lenProcesses = lenProcesses <= 0 ? 1 : lenProcesses; // criar no minimo 1 processo.
+
+    if (colA == rowB)
     {
 
-        for (ii = 0; ii < linhaA; ii++)
+        for (ii = 0; ii < rowA; ii++)
         {
-            for (jj = 0; jj < colunaA; jj++)
+            for (jj = 0; jj < colA; jj++)
             {
-                matrizA[ii][jj] = rand() % 10 + 1;
+                matrixA->mat[ii * rowA + jj] = rand() % 10 + 1;
             }
         }
 
-        for (ii = 0; ii < linhaB; ii++)
+        for (ii = 0; ii < rowB; ii++)
         {
-            for (jj = 0; jj < colunaB; jj++)
+            for (jj = 0; jj < colB; jj++)
             {
-                matrizB[ii][jj] = rand() % 10 + 1;
+                matrixB->mat[ii * rowB + jj] = rand() % 10 + 1;
             }
         }
 
         // Imprime as matrizes definidas
-        // cout << "---------------------------- MATRIZ A ---------------------------------" << endl;
+        cout << "================ MATRIZ A ================" << endl;
 
-        // for (ii = 0; ii < linhaA; ii++)
-        // {
-        //     for (jj = 0; jj < colunaA; jj++)
-        //     {
-        //         cout << matrizA[ii][jj] << " ";
-        //     }
-        //     cout << endl;
-        // }
+        for (ii = 0; ii < rowA; ii++)
+        {
+            for (jj = 0; jj < colA; jj++)
+            {
+                cout << matrixA->mat[ii * rowA + jj] << " ";
+            }
+            cout << endl;
+        }
 
-        // cout << "---------------------------- MATRIZ B ---------------------------------" << endl;
-        // for (ii = 0; ii < linhaB; ii++)
-        // {
-        //     for (jj = 0; jj < colunaB; jj++)
-        //     {
-        //         cout << matrizB[ii][jj] << " ";
-        //     }
-        //     cout << endl;
-        // }
-
-        // cout << "---------------------------- MATRIZ C - MATRIZ GERADA ---------------------------------" << endl;
+        cout << "================ MATRIZ B ================" << endl;
+        for (ii = 0; ii < rowB; ii++)
+        {
+            for (jj = 0; jj < colB; jj++)
+            {
+                cout << matrixB->mat[ii * rowB + jj] << " ";
+            }
+            cout << endl;
+        }
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        for (ii = 0; ii < linhaA; ii++)
+        // int index_thread = 0;
+        const int lastPosMatrixC = matrixA->nrow * matrixB->ncol - 1;
+
+        for (int pp = 0; pp < matrixA->nrow * matrixB->ncol; pp = pp + PARTITION_MATRIX)
         {
-            for (jj = 0; jj < colunaB; jj++)
+            MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
+            matrixPartition->posStart = pp;
+            int posEnd = (pp + PARTITION_MATRIX - 1);
+
+            matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
+
+            pid_t pid = fork();
+            if (pid == 0)
             {
-                matrizC[ii][jj] = 0;
-
-                pid_t pid = fork();
-
-                if (pid == 0)
-                {
-                    // mem = static_cast<vector<vector<int>> *>(shmat(valor, NULL, 0));
-
-                    for (x = 0; x < linhaB; x++)
-                    {
-                        aux += matrizA[ii][x] * matrizB[x][jj];
-                    }
-
-                    // cout << aux << " - " << (*mem)[ii][jj] << endl;
-                    // cout << aux << " - " <<  endl;
-                    // (*mem)[ii][jj] = aux;
-                    sharedMem[ii * colunaB + jj] = aux;
-
-                    // cout << aux << " - " << sharedMem[ii * colunaB + jj] << endl;
-                    aux = 0;
-                    exit(EXIT_SUCCESS);
-                }
-                else if (pid > 0)
-                {
-                    // pai
-                }
+                calculeElementInMatrix(matrixPartition, sharedMem, matrixA->nrow, matrixB->ncol);
+                exit(EXIT_SUCCESS);
             }
         }
+
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-        // for (ii = 0; ii < linhaA; ii++)
-        // {
-        //     for (jj = 0; jj < colunaB; jj++)
-        //     {
-        //         // cout << matrizC[ii][jj] << " ";
-        //         cout << sharedMem[ii * colunaB + jj] << " ";
-        //     }
-        //     cout << endl;
-        // }
+        for (int ii = 0; ii < lenProcesses; ii++)
+        {
+            // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
+            wait(NULL);
+        }
+
+        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+
+        for (ii = 0; ii < matrixA->nrow; ii++)
+        {
+            for (jj = 0; jj < matrixB->ncol; jj++)
+            {
+                cout << sharedMem[ii * matrixB->ncol + jj] << " ";
+            }
+            cout << endl;
+        }
         cout << endl
              << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
@@ -133,5 +175,4 @@ int main()
     }
 
     return 0;
-
-} // cabooooo
+}

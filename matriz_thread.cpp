@@ -3,7 +3,7 @@
 #include <chrono>
 
 using namespace std;
-const int PARTITION_MATRIX = 50;
+const int PARTITION_MATRIX = 200;
 
 typedef struct
 {
@@ -14,35 +14,8 @@ typedef struct
 typedef struct
 {
     int nrow, ncol;
-    int **mat;
-} Matrix;
-
-typedef struct
-{
-    int nrow, ncol;
     int *mat;
 } MyArray;
-
-typedef struct
-{
-    int age;
-} Person;
-
-Matrix *createMatrix(int nrow, int ncol)
-{
-    Matrix *matrix = (Matrix *)malloc(sizeof(Matrix));
-    matrix->nrow = nrow;
-    matrix->ncol = ncol;
-
-    matrix->mat = (int **)calloc(nrow, sizeof(int *));
-
-    for (int jj = 0; jj < nrow; jj++)
-    {
-        matrix->mat[jj] = (int *)calloc(ncol, sizeof(int));
-    }
-
-    return matrix;
-}
 
 MyArray *createMyArray(int nrow, int ncol)
 {
@@ -53,23 +26,6 @@ MyArray *createMyArray(int nrow, int ncol)
     myArray->mat = (int *)calloc(nrow * ncol, sizeof(int));
 
     return myArray;
-}
-
-void readMatrix(Matrix *matrix)
-{
-    for (int ii = 0; ii < matrix->nrow; ii++)
-    {
-        for (int jj = 0; jj < matrix->ncol; jj++)
-        {
-            scanf(" %d", &(matrix->mat[ii][jj]));
-        }
-    }
-}
-
-void destroyMatrix(Matrix **m)
-{
-    free(*m);
-    *m = NULL;
 }
 
 // inicio variaveis globais
@@ -149,26 +105,26 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
+        // cout << "================ MATRIZ A ================" << endl;
 
-        for (ii = 0; ii < rowA; ii++)
-        {
-            for (jj = 0; jj < colA; jj++)
-            {
-                cout << matrixA->mat[ii * rowA + jj] << " ";
-            }
-            cout << endl;
-        }
+        // for (ii = 0; ii < rowA; ii++)
+        // {
+        //     for (jj = 0; jj < colA; jj++)
+        //     {
+        //         cout << matrixA->mat[ii * rowA + jj] << " ";
+        //     }
+        //     cout << endl;
+        // }
 
-        cout << "================ MATRIZ B ================" << endl;
-        for (ii = 0; ii < rowB; ii++)
-        {
-            for (jj = 0; jj < colB; jj++)
-            {
-                cout << matrixB->mat[ii * rowB + jj] << " ";
-            }
-            cout << endl;
-        }
+        // cout << "================ MATRIZ B ================" << endl;
+        // for (ii = 0; ii < rowB; ii++)
+        // {
+        //     for (jj = 0; jj < colB; jj++)
+        //     {
+        //         cout << matrixB->mat[ii * rowB + jj] << " ";
+        //     }
+        //     cout << endl;
+        // }
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
