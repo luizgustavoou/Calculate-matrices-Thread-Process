@@ -1,14 +1,9 @@
-
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/shm.h>
-
-#include <chrono>
-#include <iostream>
-
-using namespace std;
 
 typedef struct
 {
@@ -46,9 +41,10 @@ void printArray(int *array, int nrow, int ncol)
     {
         for (int jj = 0; jj < ncol; jj++)
         {
-            cout << array[ii * nrow + jj] << " ";
+            printf("%d", array[ii * nrow + jj]);
+            printf(" ");
         }
-        cout << endl;
+        printf("\n");
     }
 }
 
@@ -79,16 +75,16 @@ int main()
     int PARTITION_MATRIX;
 
     // Entrada de dados
-    cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
+    printf("Informe a quantidade de elementos a serem calculados na matriz por thread: \n");
     scanf("%d", &PARTITION_MATRIX);
-    cout << "Informe a quntidade de linhas da matriz A : ";
+    printf("Informe a quntidade de linhas da matriz A : ");
     scanf("%d", &rowA);
-    cout << "Informe a quantidade de colunas da matriz A : ";
+    printf("Informe a quantidade de colunas da matriz A : ");
     scanf("%d", &colA);
 
-    cout << "Informe a quntidade de linhas da matriz B : ";
+    printf("Informe a quntidade de linhas da matriz B : ");
     scanf("%d", &rowB);
-    cout << "Informe a quantidade de colunas da matriz B : ";
+    print("Informe a quantidade de colunas da matriz B : ");
     scanf("%d", &colB);
 
     matrixA = createMyArray(rowA, colA);
@@ -120,14 +116,14 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
+        printf("================ MATRIZ A ================\n");
         printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
 
-        cout << "================ MATRIZ B ================" << endl;
+        printf("================ MATRIZ B ================\n");
         printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
-        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         // int index_thread = 0;
         const int lastPosMatrixC = matrixA->nrow * matrixB->ncol - 1;
 
@@ -147,7 +143,7 @@ int main()
             }
         }
 
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         for (int ii = 0; ii < lenProcesses; ii++)
         {
@@ -155,14 +151,15 @@ int main()
             wait(NULL);
         }
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        printf("================ MATRIZ C - MATRIZ GERADA ================\n");
         printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
-        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        printf(chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+        printf(" [ms]\n");
     }
     else
     {
-        cout << "Nao ha com multiplicar as matrizes dadas ";
+        printf("Nao ha com multiplicar as matrizes dadas ");
     }
 
     return 0;

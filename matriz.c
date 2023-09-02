@@ -1,8 +1,5 @@
-#include <iostream>
-#include <vector>
-#include <chrono>
-
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -32,9 +29,10 @@ void printMatrix(Matrix *matrix)
     {
         for (int jj = 0; jj < matrix->ncol; jj++)
         {
-            cout << matrix->mat[ii][jj] << " ";
+            printf("%d", matrix->mat[ii][jj]);
+            printf(" ");
         }
-        cout << endl;
+        printf("\n");
     }
 }
 
@@ -48,14 +46,14 @@ int main()
     Matrix *matrixC;
 
     // Entrada de dados
-    cout << "Informe a quntidade de linhas da matriz A : ";
+    printf("Informe a quntidade de linhas da matriz A : ");
     scanf("%d", &rowA);
-    cout << "Informe a quantidade de colunas da matriz A : ";
+    printf("Informe a quantidade de colunas da matriz A : ");
     scanf("%d", &colA);
 
-    cout << "Informe a quntidade de linhas da matriz B : ";
+    printf("Informe a quntidade de linhas da matriz B : ");
     scanf("%d", &rowB);
-    cout << "Informe a quantidade de colunas da matriz B : ";
+    printf("Informe a quantidade de colunas da matriz B : ");
     scanf("%d", &colB);
 
     matrixA = createMatrix(rowA, colA);
@@ -82,14 +80,14 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
+        printf("================ MATRIZ A ================\n");
         printMatrix(matrixA);
 
-        cout << "================ MATRIZ B ================" << endl;
+        printf("================ MATRIZ B ================\n");
         printMatrix(matrixB);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
-        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         for (ii = 0; ii < matrixC->nrow; ii++)
         {
             for (jj = 0; jj < matrixC->ncol; jj++)
@@ -106,16 +104,17 @@ int main()
                 aux = 0;
             }
         }
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        printf("================ MATRIZ C - MATRIZ GERADA ================\n");
         printMatrix(matrixC);
 
-        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        //###########################################printf(chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+        printf(" [ms]\n");
     }
     else
     {
-        cout << "Nao ha com multiplicar as matrizes dadas ";
+        printf("Não ha com multiplicar as matrizes dadas ");
     }
 
     return 0;

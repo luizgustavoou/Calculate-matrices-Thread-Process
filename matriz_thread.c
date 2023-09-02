@@ -1,8 +1,6 @@
-#include <iostream>
-#include <vector>
-#include <chrono>
-
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 typedef struct
 {
@@ -41,9 +39,10 @@ void printArray(int *array, int nrow, int ncol)
     {
         for (int jj = 0; jj < ncol; jj++)
         {
-            cout << array[ii * nrow + jj] << " ";
+            printf("%d", array[ii * nrow + jj]);
+            printf(" ");
         }
-        cout << endl;
+        printf("\n");
     }
 }
 
@@ -80,16 +79,16 @@ int main()
     pthread_t *threads;
 
     // Entrada de dados
-    cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
+    printf("Informe a quantidade de elementos a serem calculados na matriz por thread: ");
     scanf("%d", &PARTITION_MATRIX);
-    cout << "Informe a quntidade de linhas da matriz A : ";
+    printf("Informe a quntidade de linhas da matriz A : ");
     scanf("%d", &rowA);
-    cout << "Informe a quantidade de colunas da matriz A : ";
+    printf("Informe a quantidade de colunas da matriz A : ");
     scanf("%d", &colA);
 
-    cout << "Informe a quntidade de linhas da matriz B : ";
+    printf("Informe a quntidade de linhas da matriz B : ");
     scanf("%d", &rowB);
-    cout << "Informe a quantidade de colunas da matriz B : ";
+    printf("Informe a quantidade de colunas da matriz B : ");
     scanf("%d", &colB);
 
     matrixA = createMyArray(rowA, colA);
@@ -119,14 +118,14 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
+        printf("================ MATRIZ A ================\n");
         printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
 
-        cout << "================ MATRIZ B ================" << endl;
+        printf("================ MATRIZ B ================\n");
         printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
 
         // CÁLCULO PRODUTO DAS MATRIZES C = A * B
-        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         int index_thread = 0;
         const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
 
@@ -142,7 +141,7 @@ int main()
             index_thread++;
         }
 
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
+        //###########################################chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         for (int ii = 0; ii < lenThreads; ii++)
         {
@@ -150,15 +149,15 @@ int main()
             pthread_join(threads[ii], &threads_arg);
         }
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        printf("================ MATRIZ C - MATRIZ GERADA ================\n");
 
         printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
-        cout
-            << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        //###########################################printf(chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+        printf(" [ms]\n");
     }
     else
     {
-        cout << "Nao ha com multiplicar as matrizes dadas ";
+        printf("Nao ha com multiplicar as matrizes dadas ");
     }
 
     return 0;
