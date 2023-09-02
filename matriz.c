@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+clock_t begin, end;
+double time_spent;
 
 typedef struct
 {
@@ -87,7 +91,7 @@ int main()
         printMatrix(matrixB);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
-        //###########################################chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+        begin = clock(); // Registra o tempo de início
         for (ii = 0; ii < matrixC->nrow; ii++)
         {
             for (jj = 0; jj < matrixC->ncol; jj++)
@@ -104,13 +108,13 @@ int main()
                 aux = 0;
             }
         }
-        //###########################################chrono::steady_clock::time_point end = chrono::steady_clock::now();
+        end = clock(); // Registra o tempo de término
 
         printf("================ MATRIZ C - MATRIZ GERADA ================\n");
         printMatrix(matrixC);
 
-        //###########################################printf(chrono::duration_cast<chrono::milliseconds>(end - begin).count());
-        printf(" [ms]\n");
+        time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("Tempo de execução: %f segundos\n", time_spent);
     }
     else
     {
