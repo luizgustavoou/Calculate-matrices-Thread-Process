@@ -114,7 +114,7 @@ int main()
         printMatrix(matrixC);
 
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Tempo de execução: %f ms\n", time_spent/1000);
+        printf("Tempo de execução: %f ms\n", time_spent*1000);
     }
     else
     {
