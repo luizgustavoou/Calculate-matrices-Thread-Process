@@ -88,7 +88,7 @@ int main()
 
     printf("Informe a quntidade de linhas da matriz B : ");
     scanf("%d", &rowB);
-    print("Informe a quantidade de colunas da matriz B : ");
+    printf("Informe a quantidade de colunas da matriz B : ");
     scanf("%d", &colB);
 
     matrixA = createMyArray(rowA, colA);
