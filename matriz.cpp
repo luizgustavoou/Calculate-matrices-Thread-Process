@@ -48,14 +48,14 @@ int main()
     Matrix *matrixC;
 
     // Entrada de dados
-    cout << "Informe a quntidade de linhas da matriz A : ";
+    // cout << "Informe a quntidade de linhas da matriz A : ";
     scanf("%d", &rowA);
-    cout << "Informe a quantidade de colunas da matriz A : ";
+    // cout << "Informe a quantidade de colunas da matriz A : ";
     scanf("%d", &colA);
 
-    cout << "Informe a quntidade de linhas da matriz B : ";
+    // cout << "Informe a quntidade de linhas da matriz B : ";
     scanf("%d", &rowB);
-    cout << "Informe a quantidade de colunas da matriz B : ";
+    // cout << "Informe a quantidade de colunas da matriz B : ";
     scanf("%d", &colB);
 
     matrixA = createMatrix(rowA, colA);
@@ -82,11 +82,11 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
-        printMatrix(matrixA);
+        // cout << "================ MATRIZ A ================" << endl;
+        // printMatrix(matrixA);
 
-        cout << "================ MATRIZ B ================" << endl;
-        printMatrix(matrixB);
+        // cout << "================ MATRIZ B ================" << endl;
+        // printMatrix(matrixB);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -108,8 +108,8 @@ int main()
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-        printMatrix(matrixC);
+        // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        // printMatrix(matrixC);
 
         cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }

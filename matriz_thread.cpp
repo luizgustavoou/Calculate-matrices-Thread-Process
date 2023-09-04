@@ -80,16 +80,16 @@ int main()
     pthread_t *threads;
 
     // Entrada de dados
-    cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
+    // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
     scanf("%d", &PARTITION_MATRIX);
-    cout << "Informe a quntidade de linhas da matriz A : ";
+    // cout << "Informe a quntidade de linhas da matriz A : ";
     scanf("%d", &rowA);
-    cout << "Informe a quantidade de colunas da matriz A : ";
+    // cout << "Informe a quantidade de colunas da matriz A : ";
     scanf("%d", &colA);
 
-    cout << "Informe a quntidade de linhas da matriz B : ";
+    // cout << "Informe a quntidade de linhas da matriz B : ";
     scanf("%d", &rowB);
-    cout << "Informe a quantidade de colunas da matriz B : ";
+    // cout << "Informe a quantidade de colunas da matriz B : ";
     scanf("%d", &colB);
 
     matrixA = createMyArray(rowA, colA);
