@@ -120,11 +120,11 @@ int main()
         }
 
         // Imprime as matrizes definidas
-        cout << "================ MATRIZ A ================" << endl;
-        printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
+        // cout << "================ MATRIZ A ================" << endl;
+        // printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
 
-        cout << "================ MATRIZ B ================" << endl;
-        printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
+        // cout << "================ MATRIZ B ================" << endl;
+        // printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -147,16 +147,15 @@ int main()
             }
         }
 
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
-
         for (int ii = 0; ii < lenProcesses; ii++)
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             wait(NULL);
         }
+        chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-        cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-        printArray(sharedMem, matrixA->nrow, matrixB->ncol);
+        // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        // printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
         cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
