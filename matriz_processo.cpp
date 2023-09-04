@@ -77,7 +77,7 @@ int main()
 
     // Definição de variaveis
     int ii, jj, xx, rowA, colA, rowB, colB;
-    int length_processes, elements_per_thread;
+    int length_processes, elements_per_processes;
 
     // Entrada de dados
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
@@ -99,7 +99,7 @@ int main()
     int *sharedMem = (int *)shmat(shmid, NULL, 0);
 
     length_processes = length_processes <= 0 ? 1 : length_processes; // criar no minimo 1 processo.
-    elements_per_thread = ceil((float)(matrixA->nrow * matrixB->ncol) / (float)length_processes);
+    elements_per_processes = ceil((float)(matrixA->nrow * matrixB->ncol) / (float)length_processes);
     if (colA == rowB)
     {
 
@@ -131,11 +131,11 @@ int main()
         // int index_thread = 0;
         const int lastPosMatrixC = matrixA->nrow * matrixB->ncol - 1;
 
-        for (int pp = 0; pp < matrixA->nrow * matrixB->ncol; pp = pp + elements_per_thread)
+        for (int pp = 0; pp < matrixA->nrow * matrixB->ncol; pp = pp + elements_per_processes)
         {
             MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
             matrixPartition->posStart = pp;
-            int posEnd = (pp + elements_per_thread - 1);
+            int posEnd = (pp + elements_per_processes - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
 
