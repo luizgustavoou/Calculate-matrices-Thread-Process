@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <math.h>
 
 using namespace std;
 
@@ -75,13 +76,13 @@ int main()
     // Definição de variaveis
     void *threads_arg;
     int ii, jj, xx, rowA, colA, rowB, colB;
-    int PARTITION_MATRIX;
+    int LENGHT_THREADS, ELEMENTS_PER_THREAD;
 
     pthread_t *threads;
 
     // Entrada de dados
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
-    scanf("%d", &PARTITION_MATRIX);
+    scanf("%d", &LENGHT_THREADS);
     // cout << "Informe a quntidade de linhas da matriz A : ";
     scanf("%d", &rowA);
     // cout << "Informe a quantidade de colunas da matriz A : ";
@@ -95,9 +96,12 @@ int main()
     matrixA = createMyArray(rowA, colA);
     matrixB = createMyArray(rowB, colB);
     matrixC = createMyArray(rowA, colB);
-    int lenThreads = (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX;
-    lenThreads = lenThreads <= 0 ? 1 : lenThreads; // criar no minimo 1 thread.
-    threads = (pthread_t *)malloc(sizeof(pthread_t) * lenThreads);
+    // int lenThreads = (matrixC->nrow * matrixC->ncol) / PARTITION_MATRIX;
+    // lenThreads = lenThreads <= 0 ? 1 : lenThreads; // criar no minimo 1 thread.
+    LENGHT_THREADS = LENGHT_THREADS <= 0 ? 1 : LENGHT_THREADS;
+    ELEMENTS_PER_THREAD = ceil((float)(matrixC->nrow * matrixC->ncol) / (float)LENGHT_THREADS);
+
+    threads = (pthread_t *)malloc(sizeof(pthread_t) * LENGHT_THREADS);
 
     if (colA == rowB)
     {
@@ -130,11 +134,11 @@ int main()
         int index_thread = 0;
         const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
 
-        for (int pp = 0; pp < matrixC->nrow * matrixC->ncol; pp = pp + PARTITION_MATRIX)
+        for (int pp = 0; pp < matrixC->nrow * matrixC->ncol; pp = pp + ELEMENTS_PER_THREAD)
         {
             MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
             matrixPartition->posStart = pp;
-            int posEnd = (pp + PARTITION_MATRIX - 1);
+            int posEnd = (pp + ELEMENTS_PER_THREAD - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
 
@@ -142,8 +146,7 @@ int main()
             index_thread++;
         }
 
-
-        for (int ii = 0; ii < lenThreads; ii++)
+        for (int ii = 0; ii < LENGHT_THREADS; ii++)
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             pthread_join(threads[ii], &threads_arg);
