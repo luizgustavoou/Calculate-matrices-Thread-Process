@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -76,11 +77,11 @@ int main()
 
     // Definição de variaveis
     int ii, jj, xx, rowA, colA, rowB, colB;
-    int PARTITION_MATRIX;
+    int length_processes, elements_per_thread;
 
     // Entrada de dados
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
-    scanf("%d", &PARTITION_MATRIX);
+    scanf("%d", &length_processes);
     // cout << "Informe a quntidade de linhas da matriz A : ";
     scanf("%d", &rowA);
     // cout << "Informe a quantidade de colunas da matriz A : ";
@@ -97,9 +98,8 @@ int main()
     int shmid = shmget(IPC_PRIVATE, sizeof(int) * matrixA->nrow * matrixB->ncol, IPC_CREAT | 0666);
     int *sharedMem = (int *)shmat(shmid, NULL, 0);
 
-    int lenProcesses = (matrixA->nrow * matrixB->ncol) / PARTITION_MATRIX;
-    lenProcesses = lenProcesses <= 0 ? 1 : lenProcesses; // criar no minimo 1 processo.
-
+    length_processes = length_processes <= 0 ? 1 : length_processes; // criar no minimo 1 processo.
+    elements_per_thread = ceil((float)(matrixA->nrow * matrixB->ncol) / (float)length_processes);
     if (colA == rowB)
     {
 
@@ -131,11 +131,11 @@ int main()
         // int index_thread = 0;
         const int lastPosMatrixC = matrixA->nrow * matrixB->ncol - 1;
 
-        for (int pp = 0; pp < matrixA->nrow * matrixB->ncol; pp = pp + PARTITION_MATRIX)
+        for (int pp = 0; pp < matrixA->nrow * matrixB->ncol; pp = pp + elements_per_thread)
         {
             MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
             matrixPartition->posStart = pp;
-            int posEnd = (pp + PARTITION_MATRIX - 1);
+            int posEnd = (pp + elements_per_thread - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
 
@@ -147,7 +147,7 @@ int main()
             }
         }
 
-        for (int ii = 0; ii < lenProcesses; ii++)
+        for (int ii = 0; ii < length_processes; ii++)
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             wait(NULL);
