@@ -3,6 +3,7 @@
 #include <chrono>
 #include <math.h>
 #include <fstream>
+#include <pthread.h>
 
 using namespace std;
 
@@ -110,6 +111,23 @@ MyArray *readMatrix(string filePath)
     return matrix;
 }
 
+void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
+{
+    ofstream file;
+    file.open(filePath);
+    file << matrix->nrow << " " << matrix->ncol << endl;
+    for (int ii = 0; ii < matrix->nrow; ii++)
+    {
+        for (int jj = 0; jj < matrix->ncol; jj++)
+        {
+            file << matrix->mat[ii * matrix->ncol + jj] << " ";
+        }
+        file << endl;
+    }
+    file << tempo << " [ms]" << endl;
+    file.close();
+}
+
 int main()
 {
 
@@ -182,14 +200,17 @@ int main()
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             pthread_join(threads[ii], &threads_arg);
+            if(elements_per_thread * (ii+1) >= matrixC->nrow * matrixC->nrow){
+                break;
+            }
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
         // printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
 
-        cout
-            << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        // cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        writeMatrixFile(matrixC, "multiplicacaoThread.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
     }
     else
     {
