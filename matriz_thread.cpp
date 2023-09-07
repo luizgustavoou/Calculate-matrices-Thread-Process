@@ -2,11 +2,8 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
-<<<<<<< Updated upstream
-=======
 #include <fstream>
 #include <pthread.h>
->>>>>>> Stashed changes
 
 using namespace std;
 
@@ -174,18 +171,11 @@ int main()
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-<<<<<<< Updated upstream
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
         // printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
         cout
             << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
-=======
-        //cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-        //printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
-
-        writeMatrixFile(matrixC, "multiplicacaoThread.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
->>>>>>> Stashed changes
     }
     else
     {
