@@ -6,7 +6,6 @@
 #include <sys/shm.h>
 #include <fstream>
 
-
 #include <chrono>
 #include <iostream>
 #include <math.h>
@@ -74,15 +73,32 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, int *sharedMemory,
     }
 }
 
-void generateMatrix(MyArray *array)
+// void generateMatrix(MyArray *array)
+// {
+//     for (int ii = 0; ii < array->nrow; ii++)
+//     {
+//         for (int jj = 0; jj < array->ncol; jj++)
+//         {
+//             array->mat[ii * array->ncol + jj] = rand() % 10 + 1;
+//         }
+//     }
+// }
+
+void writeMatrixFile(int *matrix, int nrow, int ncol, string filePath, int tempo)
 {
-    for (int ii = 0; ii < array->nrow; ii++)
+    ofstream file;
+    file.open(filePath);
+    file << nrow << " " << ncol << endl;
+    for (int ii = 0; ii < nrow; ii++)
     {
-        for (int jj = 0; jj < array->ncol; jj++)
+        for (int jj = 0; jj < ncol; jj++)
         {
-            array->mat[ii * array->ncol + jj] = rand() % 10 + 1;
+            file << matrix[ii * ncol + jj] << " ";
         }
+        file << endl;
     }
+    file << tempo << " [ms]" << endl;
+    file.close();
 }
 
 MyArray *readMatrix(string filePath)
@@ -183,13 +199,18 @@ int main()
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             wait(NULL);
+            if (elements_per_processes * (ii + 1) >= matrixA->nrow * matrixB->ncol)
+            {
+                break;
+            }
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
         // printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
-        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        // cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        writeMatrixFile(sharedMem, matrixA->nrow, matrixB->ncol, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
     }
     else
     {

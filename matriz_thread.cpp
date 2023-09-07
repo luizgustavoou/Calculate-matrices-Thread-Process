@@ -200,7 +200,7 @@ int main()
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             pthread_join(threads[ii], &threads_arg);
-            if(elements_per_thread * (ii+1) >= matrixC->nrow * matrixC->nrow){
+            if(elements_per_thread * (ii+1) >= matrixC->nrow * matrixC->ncol){
                 break;
             }
         }
