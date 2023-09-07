@@ -2,6 +2,11 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
+<<<<<<< Updated upstream
+=======
+#include <fstream>
+#include <pthread.h>
+>>>>>>> Stashed changes
 
 using namespace std;
 
@@ -81,6 +86,23 @@ void generateMatrix(MyArray *array)
     }
 }
 
+void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
+{
+    ofstream file;
+    file.open(filePath);
+    file << matrix->nrow << " " << matrix->ncol << endl;
+    for (int ii = 0; ii < matrix->nrow; ii++)
+    {
+        for (int jj = 0; jj < matrix->ncol; jj++)
+        {
+            file << matrix->mat[ii * matrix->ncol + jj] << " ";
+        }
+        file << endl;
+    }
+    file << tempo << " [ms]" << endl;
+    file.close();
+}
+
 int main()
 {
 
@@ -131,7 +153,6 @@ int main()
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         int index_thread = 0;
         const int lastPosMatrixC = matrixC->nrow * matrixC->ncol - 1;
-
         for (int pp = 0; pp < matrixC->nrow * matrixC->ncol; pp = pp + elements_per_thread)
         {
             MatrixPartition *matrixPartition = (MatrixPartition *)malloc(sizeof(MatrixPartition));
@@ -143,19 +164,28 @@ int main()
             pthread_create(&threads[index_thread], NULL, calculeElementInMatrix, matrixPartition);
             index_thread++;
         }
-
         for (int ii = 0; ii < length_threads; ii++)
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             pthread_join(threads[ii], &threads_arg);
+            if(elements_per_thread * (ii+1) >= matrixC->nrow * matrixC->nrow){
+                break;
+            }
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
+<<<<<<< Updated upstream
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
 
         // printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
         cout
             << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+=======
+        //cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+        //printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
+
+        writeMatrixFile(matrixC, "multiplicacaoThread.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+>>>>>>> Stashed changes
     }
     else
     {

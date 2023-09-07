@@ -83,6 +83,54 @@ void generateMatrix(MyArray *array)
     }
 }
 
+<<<<<<< Updated upstream
+=======
+MyArray *readMatrix(string filePath)
+{
+    ifstream file;
+    int nrow, ncol, ii = 0, jj = 0;
+
+    file.open(filePath, ios::app);
+
+    MyArray *matrix;
+
+    file >> nrow >> ncol;
+
+    matrix = createMyArray(nrow, ncol);
+
+    while (file)
+    {
+        file >> matrix->mat[ii * matrix->ncol + jj];
+        jj++;
+        if (jj >= matrix->ncol)
+        {
+            jj = 0;
+            ii++;
+        }
+    }
+
+    file.close();
+    return matrix;
+}
+
+void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
+{
+    ofstream file;
+    file.open(filePath);
+    file << matrix->nrow << " " << matrix->ncol << endl;
+    for (int ii = 0; ii < matrix->nrow; ii++)
+    {
+        for (int jj = 0; jj < matrix->ncol; jj++)
+        {
+            file << matrix->mat[ii * matrix->ncol + jj] << " ";
+        }
+        file << endl;
+    }
+    file << tempo << " [ms]" << endl;
+    file.close();
+}
+
+>>>>>>> Stashed changes
 int main()
 {
 
@@ -150,13 +198,17 @@ int main()
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             wait(NULL);
+            if(elements_per_processes * (ii+1) >= matrixC->nrow * matrixC->nrow){
+                break;
+            }
         }
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
         // printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
-        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        writeMatrixFile(matrixC, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+
     }
     else
     {
