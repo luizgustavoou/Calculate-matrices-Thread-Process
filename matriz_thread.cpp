@@ -70,6 +70,17 @@ void *calculeElementInMatrix(void *tid)
     pthread_exit(NULL);
 }
 
+void generateMatrix(MyArray *array)
+{
+    for (int ii = 0; ii < array->nrow; ii++)
+    {
+        for (int jj = 0; jj < array->ncol; jj++)
+        {
+            array->mat[ii * array->nrow + jj] = rand() % 10 + 1;
+        }
+    }
+}
+
 int main()
 {
 
@@ -105,21 +116,9 @@ int main()
     if (colA == rowB)
     {
 
-        for (ii = 0; ii < rowA; ii++)
-        {
-            for (jj = 0; jj < colA; jj++)
-            {
-                matrixA->mat[ii * rowA + jj] = rand() % 10 + 1;
-            }
-        }
+        generateMatrix(matrixA);
 
-        for (ii = 0; ii < rowB; ii++)
-        {
-            for (jj = 0; jj < colB; jj++)
-            {
-                matrixB->mat[ii * rowB + jj] = rand() % 10 + 1;
-            }
-        }
+        generateMatrix(matrixB);
 
         // Imprime as matrizes definidas
         // cout << "================ MATRIZ A ================" << endl;

@@ -38,6 +38,17 @@ void printMatrix(Matrix *matrix)
     }
 }
 
+void generateMatrix(Matrix *matrix)
+{
+    for (int ii = 0; ii < matrix->nrow; ii++)
+    {
+        for (int jj = 0; jj < matrix->ncol; jj++)
+        {
+            matrix->mat[ii][jj] = rand() % 10 + 1;
+        }
+    }
+}
+
 int main()
 {
 
