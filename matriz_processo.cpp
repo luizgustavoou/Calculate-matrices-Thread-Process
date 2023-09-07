@@ -8,6 +8,7 @@
 #include <chrono>
 #include <iostream>
 #include <math.h>
+#include <fstream>
 
 using namespace std;
 
@@ -83,8 +84,6 @@ void generateMatrix(MyArray *array)
     }
 }
 
-<<<<<<< Updated upstream
-=======
 MyArray *readMatrix(string filePath)
 {
     ifstream file;
@@ -113,16 +112,16 @@ MyArray *readMatrix(string filePath)
     return matrix;
 }
 
-void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
+void writeMatrixFile(int *array, int nrow, int ncol, string filePath, int tempo)
 {
     ofstream file;
     file.open(filePath);
-    file << matrix->nrow << " " << matrix->ncol << endl;
-    for (int ii = 0; ii < matrix->nrow; ii++)
+    file << nrow << " " << ncol << endl;
+    for (int ii = 0; ii < nrow; ii++)
     {
-        for (int jj = 0; jj < matrix->ncol; jj++)
+        for (int jj = 0; jj < ncol; jj++)
         {
-            file << matrix->mat[ii * matrix->ncol + jj] << " ";
+            file << array[ii * ncol + jj] << " ";
         }
         file << endl;
     }
@@ -130,7 +129,6 @@ void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
     file.close();
 }
 
->>>>>>> Stashed changes
 int main()
 {
 
@@ -198,7 +196,8 @@ int main()
         {
             // Esperar os processos acabarem para depois poder printar a matriz C (caso queira)
             wait(NULL);
-            if(elements_per_processes * (ii+1) >= matrixC->nrow * matrixC->nrow){
+            if (elements_per_processes * (ii + 1) >= matrixA->nrow * matrixB->ncol)
+            {
                 break;
             }
         }
@@ -207,8 +206,7 @@ int main()
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
         // printArray(sharedMem, matrixA->nrow, matrixB->ncol);
 
-        writeMatrixFile(matrixC, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
-
+        writeMatrixFile(sharedMem, matrixA->nrow, matrixB->ncol, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
     }
     else
     {
