@@ -76,21 +76,9 @@ int main()
     if (colA == rowB)
     {
 
-        for (ii = 0; ii < rowA; ii++)
-        {
-            for (jj = 0; jj < colA; jj++)
-            {
-                matrixA->mat[ii][jj] = rand() % 10 + 1;
-            }
-        }
+        generateMatrix(matrixA);
 
-        for (ii = 0; ii < rowB; ii++)
-        {
-            for (jj = 0; jj < colB; jj++)
-            {
-                matrixB->mat[ii][jj] = rand() % 10 + 1;
-            }
-        }
+        generateMatrix(matrixB);
 
         // Imprime as matrizes definidas
         // cout << "================ MATRIZ A ================" << endl;
