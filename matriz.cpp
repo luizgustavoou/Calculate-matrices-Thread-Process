@@ -81,8 +81,8 @@ int main()
     }
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-    cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-    printMatrix(matrixC);
+    // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+    // printMatrix(matrixC);
     time = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
     writeResultMatrixInFile(matrixC, "multiplicacaoSequencial.txt", time);
 
