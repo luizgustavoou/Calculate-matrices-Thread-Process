@@ -2,6 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
+#include <fstream>
 
 using namespace std;
 
@@ -70,15 +71,43 @@ void *calculeElementInMatrix(void *tid)
     pthread_exit(NULL);
 }
 
-void generateMatrix(MyArray *array)
+// void generateMatrix(MyArray *array)
+// {
+//     for (int ii = 0; ii < array->nrow; ii++)
+//     {
+//         for (int jj = 0; jj < array->ncol; jj++)
+//         {
+//             array->mat[ii * array->nrow + jj] = rand() % 10 + 1;
+//         }
+//     }
+// }
+
+MyArray *readMatrix(string filePath)
 {
-    for (int ii = 0; ii < array->nrow; ii++)
+    ifstream file;
+    int nrow, ncol, ii = 0, jj = 0;
+
+    file.open(filePath, ios::app);
+
+    MyArray *matrix;
+
+    file >> nrow >> ncol;
+
+    matrix = createMyArray(nrow, ncol);
+
+    while (file)
     {
-        for (int jj = 0; jj < array->ncol; jj++)
+        file >> matrix->mat[ii * matrix->ncol + jj];
+        jj++;
+        if (jj >= matrix->ncol)
         {
-            array->mat[ii * array->nrow + jj] = rand() % 10 + 1;
+            jj = 0;
+            ii++;
         }
     }
+
+    file.close();
+    return matrix;
 }
 
 int main()
@@ -86,7 +115,7 @@ int main()
 
     // Definição de variaveis
     void *threads_arg;
-    int ii, jj, xx, rowA, colA, rowB, colB;
+    // int ii, jj, xx, rowA, colA, rowB, colB;
     int length_threads, elements_per_thread;
 
     pthread_t *threads;
@@ -95,30 +124,35 @@ int main()
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
     scanf("%d", &length_threads);
     // cout << "Informe a quntidade de linhas da matriz A : ";
-    scanf("%d", &rowA);
+    // scanf("%d", &rowA);
     // cout << "Informe a quantidade de colunas da matriz A : ";
-    scanf("%d", &colA);
+    // scanf("%d", &colA);
 
     // cout << "Informe a quntidade de linhas da matriz B : ";
-    scanf("%d", &rowB);
+    // scanf("%d", &rowB);
     // cout << "Informe a quantidade de colunas da matriz B : ";
-    scanf("%d", &colB);
+    // scanf("%d", &colB);
 
-    matrixA = createMyArray(rowA, colA);
-    matrixB = createMyArray(rowB, colB);
-    matrixC = createMyArray(rowA, colB);
+    // matrixA = createMyArray(rowA, colA);
+    // matrixB = createMyArray(rowB, colB);
+    // matrixC = createMyArray(matrixA->nrow, matrixB->ncol);
+
+    matrixA = readMatrix("matrizM1.txt");
+    matrixB = readMatrix("matrizM2.txt");
+
+    matrixC = createMyArray(matrixA->nrow, matrixB->ncol);
 
     length_threads = length_threads <= 0 ? 1 : length_threads; // criar no minimo 1 thread.
     elements_per_thread = ceil((float)(matrixC->nrow * matrixC->ncol) / (float)length_threads);
 
     threads = (pthread_t *)malloc(sizeof(pthread_t) * length_threads);
 
-    if (colA == rowB)
+    if (matrixA->ncol == matrixB->nrow)
     {
 
-        generateMatrix(matrixA);
+        // generateMatrix(matrixA);
 
-        generateMatrix(matrixB);
+        // generateMatrix(matrixB);
 
         // Imprime as matrizes definidas
         // cout << "================ MATRIZ A ================" << endl;
@@ -152,8 +186,8 @@ int main()
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-
         // printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
+
         cout
             << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }

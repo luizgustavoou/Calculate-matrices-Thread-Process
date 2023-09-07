@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/shm.h>
+#include <fstream>
+
 
 #include <chrono>
 #include <iostream>
@@ -83,40 +85,71 @@ void generateMatrix(MyArray *array)
     }
 }
 
+MyArray *readMatrix(string filePath)
+{
+    ifstream file;
+    int nrow, ncol, ii = 0, jj = 0;
+
+    file.open(filePath, ios::app);
+
+    MyArray *matrix;
+
+    file >> nrow >> ncol;
+
+    matrix = createMyArray(nrow, ncol);
+
+    while (file)
+    {
+        file >> matrix->mat[ii * matrix->ncol + jj];
+        jj++;
+        if (jj >= matrix->ncol)
+        {
+            jj = 0;
+            ii++;
+        }
+    }
+
+    file.close();
+    return matrix;
+}
+
 int main()
 {
 
     // Definição de variaveis
-    int ii, jj, xx, rowA, colA, rowB, colB;
+    // int ii, jj, xx, rowA, colA, rowB, colB;
     int length_processes, elements_per_processes;
 
     // Entrada de dados
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
     scanf("%d", &length_processes);
     // cout << "Informe a quntidade de linhas da matriz A : ";
-    scanf("%d", &rowA);
+    // scanf("%d", &rowA);
     // cout << "Informe a quantidade de colunas da matriz A : ";
-    scanf("%d", &colA);
+    // scanf("%d", &colA);
 
     // cout << "Informe a quntidade de linhas da matriz B : ";
-    scanf("%d", &rowB);
+    // scanf("%d", &rowB);
     // cout << "Informe a quantidade de colunas da matriz B : ";
-    scanf("%d", &colB);
+    // scanf("%d", &colB);
 
-    matrixA = createMyArray(rowA, colA);
-    matrixB = createMyArray(rowB, colB);
+    // matrixA = createMyArray(rowA, colA);
+    // matrixB = createMyArray(rowB, colB);
+
+    matrixA = readMatrix("matrizM1.txt");
+    matrixB = readMatrix("matrizM2.txt");
 
     int shmid = shmget(IPC_PRIVATE, sizeof(int) * matrixA->nrow * matrixB->ncol, IPC_CREAT | 0666);
     int *sharedMem = (int *)shmat(shmid, NULL, 0);
 
     length_processes = length_processes <= 0 ? 1 : length_processes; // criar no minimo 1 processo.
     elements_per_processes = ceil((float)(matrixA->nrow * matrixB->ncol) / (float)length_processes);
-    if (colA == rowB)
+    if (matrixA->ncol == matrixB->nrow)
     {
 
-        generateMatrix(matrixA);
+        // generateMatrix(matrixA);
 
-        generateMatrix(matrixB);
+        // generateMatrix(matrixB);
 
         // Imprime as matrizes definidas
         // cout << "================ MATRIZ A ================" << endl;
