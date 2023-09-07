@@ -32,17 +32,17 @@ Matrix *createMatrix(int nrow, int ncol)
     return matrix;
 }
 
-void escreveMatrixArquivo(Matrix *matrix, string caminhoArquivo)
+void writeMatrixFile(Matrix *matrix, string filePath)
 {
-    ofstream matriz;
-    matriz.open(caminhoArquivo, ios::app);
+    ofstream file;
+    file.open(filePath, ios::app);
     for (int ii = 0; ii < matrix->nrow; ii++)
     {
         for (int jj = 0; jj < matrix->ncol; jj++)
         {
-            matriz << matrix->mat[ii][jj] << " ";
+            file << matrix->mat[ii][jj] << " ";
         }
-        matriz << endl;
+        file << endl;
     }
-    matriz.close();
+    file.close();
 }

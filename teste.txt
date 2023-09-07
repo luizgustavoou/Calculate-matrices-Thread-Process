@@ -1,1 +1,0 @@
-Informe a quantidade de elementos a serem calculados na matriz por thread: Informe a quntidade de linhas da matriz A : Informe a quantidade de colunas da matriz A : Informe a quntidade de linhas da matriz B : Informe a quantidade de colunas da matriz B : 763 [ms]

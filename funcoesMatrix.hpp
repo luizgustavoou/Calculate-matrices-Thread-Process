@@ -12,6 +12,6 @@ void printMatrix(Matrix *matrix);
 
 Matrix *createMatrix(int nrow, int ncol);
 
-void escreveMatrixArquivo(Matrix *matrix, std::string caminhoArquivo);
+void writeMatrixFile(Matrix *matrix, std::string caminhoArquivo);
 
 #endif

@@ -8,59 +8,50 @@
 
 using namespace std;
 
-Matrix * readMatrix(string caminhoArquivo)
+Matrix *readMatrix(string filePath)
 {
-    ifstream matriz;
-    matriz.open(caminhoArquivo, ios::app);
-    string linha1, token;
+    ifstream file;
+    int nrow, ncol, ii = 0, jj = 0;
+
+    file.open(filePath, ios::app);
+
     Matrix *matrix;
-    int ii = 0, jj;
 
-    getline(matriz, linha1);
-    istringstream iss(linha1);
-    vector<int> tokens;  // Para armazenar os valores separados
-    while (getline(iss, token, ' '))
+    file >> nrow >> ncol;
+
+    matrix = createMatrix(nrow, ncol);
+
+    while (file)
     {
-        tokens.push_back(stoi(token));
-    }
-    matrix = createMatrix(tokens[0], tokens[1]);
 
-    while(getline(matriz, linha1))
-    {
-        istringstream iss(linha1);
-        jj = 0;
-        vector<int> tokens;  // Para armazenar os valores separados
-        while (getline(iss, token, ' '))
+        file >> matrix->mat[ii][jj];
+        jj++;
+        if (jj >= matrix->ncol)
         {
-            tokens.push_back(stoi(token));
+            jj = 0;
+            ii++;
         }
-
-        for (const int& value : tokens)
-        {
-            matrix->mat[ii][jj] = value;
-            jj ++;
-        }
-        ii ++;
     }
-    matriz.close();
+
+    file.close();
     return matrix;
 }
 
-void escreveMatrixResultadoArquivo(Matrix *matrix, string caminhoArquivo, int tempo)
+void writeResultMatrixInFile(Matrix *matrix, string filePath, int time)
 {
-    ofstream matriz;
-    matriz.open(caminhoArquivo);
-    matriz << tempo;
-    matriz << " [ms]" << endl;
-    matriz.close();
-    escreveMatrixArquivo(matrix, caminhoArquivo);
+    ofstream file;
+    file.open(filePath);
+    file << time;
+    file << " [ms]" << endl;
+    file.close();
+    writeMatrixFile(matrix, filePath);
 }
 
 int main()
 {
     // Definição de variaveis
     int aux = 0, ii, jj, xx;
-    int tempo;
+    int time;
     Matrix *matrixA;
     Matrix *matrixB;
     Matrix *matrixC;
@@ -70,7 +61,6 @@ int main()
     matrixB = readMatrix("matrizM2.txt");
 
     matrixC = createMatrix(matrixA->nrow, matrixB->ncol);
-
 
     // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -93,8 +83,8 @@ int main()
 
     cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
     printMatrix(matrixC);
-    tempo = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
-    escreveMatrixResultadoArquivo(matrixC, "multiplicacaoSequencial.txt", tempo);
+    time = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
+    writeResultMatrixInFile(matrixC, "multiplicacaoSequencial.txt", time);
 
     return 0;
 }

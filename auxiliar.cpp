@@ -5,13 +5,13 @@
 
 using namespace std;
 
-void escreveMatrixArquivoBase(Matrix *matrix, string caminhoArquivo, int nrow, int ncow)
+void writeMatrixFileBase(Matrix *matrix, string caminhoArquivo, int nrow, int ncow)
 {
     ofstream matriz;
     matriz.open(caminhoArquivo);
     matriz << nrow << " " << ncow << endl;
     matriz.close();
-    escreveMatrixArquivo(matrix, caminhoArquivo);
+    writeMatrixFile(matrix, caminhoArquivo);
 }
 
 
@@ -58,8 +58,8 @@ int main()
 
         generateMatrix(matrixB);
 
-        escreveMatrixArquivoBase(matrixA, "matrizM1.txt", rowA, colA);
-        escreveMatrixArquivoBase(matrixB, "matrizM2.txt", rowB, colB);
+        writeMatrixFileBase(matrixA, "matrizM1.txt", rowA, colA);
+        writeMatrixFileBase(matrixB, "matrizM2.txt", rowB, colB);
     }
     else{
         cout << "As medidas das matrizes informadas não são compativeis." << endl;
