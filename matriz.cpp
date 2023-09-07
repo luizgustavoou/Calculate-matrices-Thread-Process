@@ -1,121 +1,100 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include "funcoesMatrix.hpp"
 
 using namespace std;
 
-typedef struct
+Matrix * readMatrix(string caminhoArquivo)
 {
-    int nrow, ncol;
-    int **mat;
-} Matrix;
+    ifstream matriz;
+    matriz.open(caminhoArquivo, ios::app);
+    string linha1, token;
+    Matrix *matrix;
+    int ii = 0, jj;
 
-Matrix *createMatrix(int nrow, int ncol)
-{
-    Matrix *matrix = (Matrix *)malloc(sizeof(Matrix));
-    matrix->nrow = nrow;
-    matrix->ncol = ncol;
-
-    matrix->mat = (int **)calloc(nrow, sizeof(int *));
-
-    for (int jj = 0; jj < nrow; jj++)
+    getline(matriz, linha1);
+    istringstream iss(linha1);
+    vector<int> tokens;  // Para armazenar os valores separados
+    while (getline(iss, token, ' '))
     {
-        matrix->mat[jj] = (int *)calloc(ncol, sizeof(int));
+        tokens.push_back(stoi(token));
     }
+    matrix = createMatrix(tokens[0], tokens[1]);
 
+    while(getline(matriz, linha1))
+    {
+        istringstream iss(linha1);
+        jj = 0;
+        vector<int> tokens;  // Para armazenar os valores separados
+        while (getline(iss, token, ' '))
+        {
+            tokens.push_back(stoi(token));
+        }
+
+        for (const int& value : tokens)
+        {
+            matrix->mat[ii][jj] = value;
+            jj ++;
+        }
+        ii ++;
+    }
+    matriz.close();
     return matrix;
 }
 
-void printMatrix(Matrix *matrix)
+void escreveMatrixResultadoArquivo(Matrix *matrix, string caminhoArquivo, int tempo)
 {
-    for (int ii = 0; ii < matrix->nrow; ii++)
-    {
-        for (int jj = 0; jj < matrix->ncol; jj++)
-        {
-            cout << matrix->mat[ii][jj] << " ";
-        }
-        cout << endl;
-    }
-}
-
-void generateMatrix(Matrix *matrix)
-{
-    for (int ii = 0; ii < matrix->nrow; ii++)
-    {
-        for (int jj = 0; jj < matrix->ncol; jj++)
-        {
-            matrix->mat[ii][jj] = rand() % 10 + 1;
-        }
-    }
+    ofstream matriz;
+    matriz.open(caminhoArquivo);
+    matriz << tempo;
+    matriz << " [ms]" << endl;
+    matriz.close();
+    escreveMatrixArquivo(matrix, caminhoArquivo);
 }
 
 int main()
 {
-
     // Definição de variaveis
-    int aux, ii, jj, xx, rowA, colA, rowB, colB;
+    int aux = 0, ii, jj, xx;
+    int tempo;
     Matrix *matrixA;
     Matrix *matrixB;
     Matrix *matrixC;
 
-    // Entrada de dados
-    // cout << "Informe a quntidade de linhas da matriz A : ";
-    scanf("%d", &rowA);
-    // cout << "Informe a quantidade de colunas da matriz A : ";
-    scanf("%d", &colA);
+    matrixA = readMatrix("matrizM1.txt");
 
-    // cout << "Informe a quntidade de linhas da matriz B : ";
-    scanf("%d", &rowB);
-    // cout << "Informe a quantidade de colunas da matriz B : ";
-    scanf("%d", &colB);
+    matrixB = readMatrix("matrizM2.txt");
 
-    matrixA = createMatrix(rowA, colA);
-    matrixB = createMatrix(rowB, colB);
-    matrixC = createMatrix(rowA, colB);
+    matrixC = createMatrix(matrixA->nrow, matrixB->ncol);
 
-    if (colA == rowB)
+
+    // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    for (ii = 0; ii < matrixC->nrow; ii++)
     {
-
-        generateMatrix(matrixA);
-
-        generateMatrix(matrixB);
-
-        // Imprime as matrizes definidas
-        // cout << "================ MATRIZ A ================" << endl;
-        // printMatrix(matrixA);
-
-        // cout << "================ MATRIZ B ================" << endl;
-        // printMatrix(matrixB);
-
-        // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
-        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        for (ii = 0; ii < matrixC->nrow; ii++)
+        for (jj = 0; jj < matrixC->ncol; jj++)
         {
-            for (jj = 0; jj < matrixC->ncol; jj++)
+            matrixC->mat[ii][jj] = 0;
+            for (xx = 0; xx < matrixB->nrow; xx++)
             {
-
-                matrixC->mat[ii][jj] = 0;
-                for (xx = 0; xx < rowB; xx++)
-                {
-                    aux += matrixA->mat[ii][xx] * matrixB->mat[xx][jj];
-                }
-
-                matrixC->mat[ii][jj] = aux;
-
-                aux = 0;
+                aux += matrixA->mat[ii][xx] * matrixB->mat[xx][jj];
             }
+
+            matrixC->mat[ii][jj] = aux;
+
+            aux = 0;
         }
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
-
-        // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-        // printMatrix(matrixC);
-
-        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
     }
-    else
-    {
-        cout << "Nao ha com multiplicar as matrizes dadas ";
-    }
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
+    printMatrix(matrixC);
+    tempo = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
+    escreveMatrixResultadoArquivo(matrixC, "multiplicacaoSequencial.txt", tempo);
 
     return 0;
 }
