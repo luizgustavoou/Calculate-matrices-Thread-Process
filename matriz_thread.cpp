@@ -43,7 +43,7 @@ void printArray(int *array, int nrow, int ncol)
     {
         for (int jj = 0; jj < ncol; jj++)
         {
-            cout << array[ii * nrow + jj] << " ";
+            cout << array[ii * ncol + jj] << " ";
         }
         cout << endl;
     }
@@ -77,7 +77,7 @@ void *calculeElementInMatrix(void *tid)
 //     {
 //         for (int jj = 0; jj < array->ncol; jj++)
 //         {
-//             array->mat[ii * array->nrow + jj] = rand() % 10 + 1;
+//             array->mat[ii * array->ncol + jj] = rand() % 10 + 1;
 //         }
 //     }
 // }
