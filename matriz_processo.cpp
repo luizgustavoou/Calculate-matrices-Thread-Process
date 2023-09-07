@@ -39,36 +39,37 @@ MyArray *createMyArray(int nrow, int ncol)
 
 MyArray *matrixA;
 MyArray *matrixB;
+MyArray *matrixC;
 
 // fim variaveis globias
 
-void printArray(int *array, int nrow, int ncol)
+void printArray(MyArray *matrix)
 {
-    for (int ii = 0; ii < nrow; ii++)
+    for (int ii = 0; ii < matrix->nrow; ii++)
     {
-        for (int jj = 0; jj < ncol; jj++)
+        for (int jj = 0; jj < matrix->ncol; jj++)
         {
-            cout << array[ii * ncol + jj] << " ";
+            cout << matrix->mat[ii * matrix->ncol + jj] << " ";
         }
         cout << endl;
     }
 }
 
-void calculeElementInMatrix(MatrixPartition *matrixPartition, int *sharedMemory, int nrow, int ncol)
+void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
 {
     int xx, aux = 0;
     // printf("PROCESSO [%d]: %d %d\n", getpid(), matrixPartition->posStart, matrixPartition->posEnd);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
-        sharedMemory[ii] = 0;
-        int colB = ii % ncol;
-        int rowA = (ii - colB) / nrow;
+        matrixC->mat[ii] = 0;
+        int colB = ii % matrixC->ncol;
+        int rowA = (ii - colB) / matrixC->nrow;
         for (xx = 0; xx < matrixB->nrow; xx++)
         {
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
-        sharedMemory[ii] = aux;
+        matrixC->mat[ii] = aux;
         aux = 0;
     }
 }
@@ -84,16 +85,16 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, int *sharedMemory,
 //     }
 // }
 
-void writeMatrixFile(int *matrix, int nrow, int ncol, string filePath, int tempo)
+void writeMatrixFile(MyArray *matrix, string filePath, int tempo)
 {
     ofstream file;
     file.open(filePath);
-    file << nrow << " " << ncol << endl;
-    for (int ii = 0; ii < nrow; ii++)
+    file << matrix->nrow << " " << matrix->ncol << endl;
+    for (int ii = 0; ii < matrix->nrow; ii++)
     {
-        for (int jj = 0; jj < ncol; jj++)
+        for (int jj = 0; jj < matrix->ncol; jj++)
         {
-            file << matrix[ii * ncol + jj] << " ";
+            file << matrix->mat[ii * matrix->ncol + jj] << " ";
         }
         file << endl;
     }
@@ -154,9 +155,13 @@ int main()
 
     matrixA = readMatrix("matrizM1.txt");
     matrixB = readMatrix("matrizM2.txt");
+    matrixC = createMyArray(matrixA->nrow, matrixB->ncol);
 
     int shmid = shmget(IPC_PRIVATE, sizeof(int) * matrixA->nrow * matrixB->ncol, IPC_CREAT | 0666);
     int *sharedMem = (int *)shmat(shmid, NULL, 0);
+
+    free(matrixC->mat);
+    matrixC->mat = sharedMem;
 
     length_processes = length_processes <= 0 ? 1 : length_processes; // criar no minimo 1 processo.
     elements_per_processes = ceil((float)(matrixA->nrow * matrixB->ncol) / (float)length_processes);
@@ -169,10 +174,10 @@ int main()
 
         // Imprime as matrizes definidas
         // cout << "================ MATRIZ A ================" << endl;
-        // printArray(matrixA->mat, matrixA->nrow, matrixA->ncol);
+        // printArray(matrixA);
 
         // cout << "================ MATRIZ B ================" << endl;
-        // printArray(matrixB->mat, matrixB->nrow, matrixB->ncol);
+        // printArray(matrixB);
 
         // Processamento e saida em tela  =  PRODUTO DAS MATRIZES
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -190,7 +195,7 @@ int main()
             pid_t pid = fork();
             if (pid == 0)
             {
-                calculeElementInMatrix(matrixPartition, sharedMem, matrixA->nrow, matrixB->ncol);
+                calculeElementInMatrix(matrixPartition, matrixC);
                 exit(EXIT_SUCCESS);
             }
         }
@@ -207,10 +212,10 @@ int main()
         chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
-        // printArray(sharedMem, matrixA->nrow, matrixB->ncol);
+        // printArray(matrixC);
 
         // cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
-        writeMatrixFile(sharedMem, matrixA->nrow, matrixB->ncol, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
+        writeMatrixFile(matrixC, "multiplicacaoProcesso.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
     }
     else
     {
