@@ -209,7 +209,7 @@ int main()
         // cout << "================ MATRIZ C - MATRIZ GERADA ================" << endl;
         // printArray(matrixC->mat, matrixC->nrow, matrixC->ncol);
 
-        // cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
+        cout << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " [ms]" << endl;
         writeMatrixFile(matrixC, "multiplicacaoThread.txt", chrono::duration_cast<chrono::milliseconds>(end - begin).count());
     }
     else

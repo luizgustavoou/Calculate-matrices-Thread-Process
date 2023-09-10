@@ -85,6 +85,8 @@ int main()
     // printMatrix(matrixC);
     time = chrono::duration_cast<chrono::milliseconds>(end - begin).count();
     writeResultMatrixInFile(matrixC, "multiplicacaoSequencial.txt", time);
+    cout << time <<  " [ms]" << endl;
+    
 
     return 0;
 }
