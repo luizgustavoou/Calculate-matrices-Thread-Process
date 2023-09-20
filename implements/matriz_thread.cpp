@@ -72,7 +72,7 @@ void *calculeElementInMatrix(void *tid)
     ofstream file;
     string nameFile = "MatrzThread" + to_string(matrixPartition->numThread) + ".txt";
     string filePath = "../results/multiplicacaoThreadPfiles/" + nameFile;
-    file.open(filePath);
+    file.open(filePath, std::ios::out | std::ios::app);
     // printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)

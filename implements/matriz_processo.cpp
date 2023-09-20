@@ -25,6 +25,20 @@ typedef struct
     int *mat;
 } MyArray;
 
+int convertColArrayToMatrix(int ii, MyArray *matrix)
+{
+    int colB = ii % matrix->ncol;
+
+    return colB;
+}
+
+int convertrowArrayToMatrix(int ii, int col, MyArray *matrix)
+{
+    int rowA = (ii - col) / matrix->nrow;
+
+    return rowA;
+}
+
 MyArray *createMyArray(int nrow, int ncol)
 {
     MyArray *myArray = (MyArray *)malloc(sizeof(MyArray));
@@ -63,7 +77,7 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
     ofstream file;
     string nameFile = "MatrzProcesso" + to_string(matrixPartition->numProcesses) + ".txt";
     string filePath = "../results/multiplicacaoProcessosPfiles/" + nameFile;
-    file.open(filePath);
+    file.open(filePath, std::ios::out | std::ios::app);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
@@ -75,7 +89,7 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
         matrixC->mat[ii] = aux;
-        file << "c" << rowA+1 << ":" << colB+1 << " = " << aux << endl;
+        file << "c" << rowA + 1 << ":" << colB + 1 << " = " << aux << endl;
         aux = 0;
     }
     file.close();
@@ -135,20 +149,6 @@ MyArray *readMatrix(string filePath)
 
     file.close();
     return matrix;
-}
-
-int convertColArrayToMatrix(int ii, MyArray *matrix)
-{
-    int colB = ii % matrix->ncol;
-
-    return colB;
-}
-
-int convertrowArrayToMatrix(int ii, int col, MyArray *matrix)
-{
-    int rowA = (ii - col) / matrix->nrow;
-
-    return rowA;
 }
 
 int main()
