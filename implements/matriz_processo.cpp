@@ -16,6 +16,7 @@ typedef struct
 {
     int posStart;
     int posEnd;
+    int numProcesses;
 } MatrixPartition;
 
 typedef struct
@@ -59,6 +60,10 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
 {
     int xx, aux = 0;
     // printf("PROCESSO [%d]: %d %d\n", getpid(), matrixPartition->posStart, matrixPartition->posEnd);
+    ofstream file;
+    string nameFile = "MatrzProcesso" + to_string(matrixPartition->numProcesses) + ".txt";
+    string filePath = "../results/multiplicacaoProcessosPfiles/" + nameFile;
+    file.open(filePath);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
@@ -70,8 +75,10 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
         matrixC->mat[ii] = aux;
+        file << "c" << rowA+1 << ":" << colB+1 << " = " << aux << endl;
         aux = 0;
     }
+    file.close();
 }
 
 // void generateMatrix(MyArray *array)
@@ -149,7 +156,7 @@ int main()
 
     // Definição de variaveis
     // int ii, jj, xx, rowA, colA, rowB, colB;
-    int length_processes, elements_per_processes;
+    int length_processes, elements_per_processes, contProcesses = 1;
 
     // Entrada de dados
     // cout << "Informe a quantidade de elementos a serem calculados na matriz por thread: ";
@@ -205,6 +212,8 @@ int main()
             int posEnd = (pp + elements_per_processes - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
+            matrixPartition->numProcesses = contProcesses;
+            contProcesses++;
 
             pid_t pid = fork();
             if (pid == 0)

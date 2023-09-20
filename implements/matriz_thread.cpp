@@ -87,7 +87,7 @@ void *calculeElementInMatrix(void *tid)
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
         matrixC->mat[ii] = aux;
-        file << "c" << rowA << colB << " = " << aux << endl;
+        file << "c" << rowA+1 << ":" << colB+1 << " = " << aux << endl;
         aux = 0;
     }
     file.close();
