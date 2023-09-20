@@ -50,6 +50,20 @@ void printArray(int *array, int nrow, int ncol)
     }
 }
 
+int convertColArrayToMatrix(int ii, MyArray *matrix)
+{
+    int colB = ii % matrix->ncol;
+
+    return colB;
+}
+
+int convertrowArrayToMatrix(int ii, int col, MyArray *matrix)
+{
+    int rowA = (ii - col) / matrix->nrow;
+
+    return rowA;
+}
+
 void *calculeElementInMatrix(void *tid)
 {
     int xx, aux = 0;
@@ -59,8 +73,10 @@ void *calculeElementInMatrix(void *tid)
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
         matrixC->mat[ii] = 0;
-        int colB = ii % matrixC->ncol;
-        int rowA = (ii - colB) / matrixC->nrow;
+        int colB = convertColArrayToMatrix(ii, matrixC);
+        int rowA = convertrowArrayToMatrix(ii, colB, matrixC);
+
+        // printf("Thread colB = %d e rowA = %d\n", colB, rowA);
         for (xx = 0; xx < matrixB->nrow; xx++)
         {
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];

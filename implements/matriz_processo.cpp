@@ -63,8 +63,8 @@ void calculeElementInMatrix(MatrixPartition *matrixPartition, MyArray *matrixC)
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
     {
         matrixC->mat[ii] = 0;
-        int colB = ii % matrixC->ncol;
-        int rowA = (ii - colB) / matrixC->nrow;
+        int colB = convertColArrayToMatrix(ii, matrixC);
+        int rowA = convertrowArrayToMatrix(ii, colB, matrixC);
         for (xx = 0; xx < matrixB->nrow; xx++)
         {
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
@@ -128,6 +128,20 @@ MyArray *readMatrix(string filePath)
 
     file.close();
     return matrix;
+}
+
+int convertColArrayToMatrix(int ii, MyArray *matrix)
+{
+    int colB = ii % matrix->ncol;
+
+    return colB;
+}
+
+int convertrowArrayToMatrix(int ii, int col, MyArray *matrix)
+{
+    int rowA = (ii - col) / matrix->nrow;
+
+    return rowA;
 }
 
 int main()
