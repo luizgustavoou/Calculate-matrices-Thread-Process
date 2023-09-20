@@ -11,6 +11,7 @@ typedef struct
 {
     int posStart;
     int posEnd;
+    int numThread;
 } MatrixPartition;
 
 typedef struct
@@ -68,6 +69,10 @@ void *calculeElementInMatrix(void *tid)
 {
     int xx, aux = 0;
     MatrixPartition *matrixPartition = (MatrixPartition *)tid;
+    ofstream file;
+    string nameFile = "MatrzThread" + to_string(matrixPartition->numThread) + ".txt";
+    string filePath = "../results/multiplicacaoThreadPfiles/" + nameFile;
+    file.open(filePath);
     // printf("THREAD: %d %d\n", matrixPartition->posStart, matrixPartition->posEnd);
 
     for (int ii = matrixPartition->posStart; ii <= matrixPartition->posEnd; ii++)
@@ -82,9 +87,10 @@ void *calculeElementInMatrix(void *tid)
             aux += matrixA->mat[rowA * matrixA->nrow + xx] * matrixB->mat[xx * matrixB->nrow + colB];
         }
         matrixC->mat[ii] = aux;
+        file << "c" << rowA << colB << " = " << aux << endl;
         aux = 0;
     }
-
+    file.close();
     pthread_exit(NULL);
 }
 
@@ -207,6 +213,7 @@ int main()
             int posEnd = (pp + elements_per_thread - 1);
 
             matrixPartition->posEnd = posEnd > lastPosMatrixC ? lastPosMatrixC : posEnd;
+            matrixPartition->numThread = index_thread + 1;
 
             pthread_create(&threads[index_thread], NULL, calculeElementInMatrix, matrixPartition);
             index_thread++;
